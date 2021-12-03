@@ -1,0 +1,9 @@
+opencv-python=4.1.2.30
+torch
+torchvision
+pandas
+matplotlib
+tqdm
+scipy
+scikit-learn
+scikit-image

@@ -1,0 +1,10 @@
+# Training step 
+## Step 1
++ After have a file pickle.
+
+
+# Error
++ `RuntimeError: CUDA error: device-side assert triggered
+CUDA kernel errors might be asynchronously reported at some other API call,so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1.`
+  + 
