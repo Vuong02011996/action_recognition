@@ -9,11 +9,14 @@ def read_file_npy():
 
 
 def read_file_pickle():
-    path_data_train = "/storages/data/DATA/Action_Recognition/DataTraining"
-    file_pickle = path_data_train + '/Coffee_room_new-set(labelXscrw).pkl'
+    # path_data_train = "/storages/data/DATA/Action_Recognition/DataTraining"
+    # file_pickle = path_data_train + '/Coffee_room_new-set(labelXscrw).pkl'
+    file_pickle = "/storages/data/DATA/Action_Recognition/DataTraining/Data_Step3/Test1.pkl"
+    file_pickle_Home = "/storages/data/DATA/Action_Recognition/DataTraining/Data_Step3/Home_1.pkl"
 
-    object = pd.read_pickle(file_pickle)
-    print(object)
+    f, l1 = pd.read_pickle(file_pickle)
+    f, l2 = pd.read_pickle(file_pickle_Home)
+    print(l1)
 
 
 def read_video():

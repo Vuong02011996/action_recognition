@@ -32,12 +32,8 @@ batch_size = 32
 #   channels: Inputs data (x, y and scores), Default: 3
 #   num_class: Number of pose class to train, Default: 7
 
-# data_files = ['../Data/Coffee_room_new-set(labelXscrw).pkl',
-#               '../Data/Home_new-set(labelXscrw).pkl']
-
-path_data_train = "/storages/data/DATA/Action_Recognition/DataTraining"
-data_train = path_data_train + '/Coffee_room_new-set(labelXscrw).pkl'
-data_files = [data_train]
+data_files = ['/storages/data/DATA/Action_Recognition/DataTraining/Data_Step3/train.pkl',
+              '/storages/data/DATA/Action_Recognition/DataTraining/Data_Step3/test.pkl']
 
 class_names = ['Standing', 'Walking', 'Sitting', 'Lying Down',
                'Stand up', 'Sit down', 'Fall Down']

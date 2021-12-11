@@ -14,6 +14,7 @@ import time
 import torch
 import pandas as pd
 import numpy as np
+from glob import glob
 import torchvision.transforms as transforms
 
 from DetectorLoader import TinyYOLOv3_onecls
@@ -23,16 +24,10 @@ from fn import vis_frame_fast
 
 path_data_train = "/storages/data/DATA/Action_Recognition/DataTraining"
 
-save_path = path_data_train + '/Home_new-pose+score.csv'
+# save_path = path_data_train + '/Home_new-pose+score.csv'
 
 # annot_file = '../../Data/Home_new.csv'  # from create_dataset_1.py
-annot_file_step1 = path_data_train + '/test/Home_new_2.csv'  # from create_dataset_1.py
-
 # video_folder = '../Data/falldata/Home/Videos'
-# video_folder = '/storages/data/DATA/Action_Recognition/FDD/FDD-20211123T082538Z-002/FDD/Home_01/Videos'
-video_folder = path_data_train + '/test/videos'
-# annot_folder = '/storages/data/DATA/Action_Recognition/FDD/FDD-20211123T082538Z-002/FDD/Home_01/Annotation_files'  # bounding box annotation for each frame.
-annot_folder = path_data_train + '/test/annot'
 
 # DETECTION MODEL.
 detector = TinyYOLOv3_onecls()
@@ -60,10 +55,16 @@ def normalize_points_with_size(points_xy, width, height, flip=False):
     return points_xy
 
 
-def extract_skeleton_joints_position_and_score(annot_file_step1):
-    annot_step1 = pd.read_csv(annot_file_step1)
+def extract_skeleton_joints_position_and_score(file_label_step1, video_folder, annot_folder, save_path, list_video_name,name_file):
+    annot_step1 = pd.read_csv(file_label_step1)
     vid_list = annot_step1['video'].unique()
     for vid in vid_list:
+        print(list_video_name)
+        if vid in list_video_name:
+            vid_rename = vid.split(".")[0] + "_" + name_file + ".avi"
+        else:
+            vid_rename = vid
+        list_video_name.append(vid_rename)
         print(f'Process on: {vid}')
         df = pd.DataFrame(columns=columns)
         cur_row = 0
@@ -86,14 +87,16 @@ def extract_skeleton_joints_position_and_score(annot_file_step1):
             annot = annot.dropna().reset_index(drop=True)
 
             if frames_count != len(annot):
-                continue
-            assert frames_count == len(annot), 'frame count not equal! {} and {}'.format(frames_count, len(annot))
+                annot = None
+                # continue
+            # assert frames_count == len(annot), 'frame count not equal! {} and {}'.format(frames_count, len(annot))
 
         fps_time = 0
         i = 1
         while True:
             ret, frame = cap.read()
-            print("frame: ", i)
+            name_video_folder = video_folder.split("/")[-2]
+            print("Video folder {} - Video name  {} - frame:  {}".format(name_video_folder, vid, i))
             if ret:
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 cls_idx = int(frames_label[frames_label['frame'] == i]['label'])
@@ -105,6 +108,7 @@ def extract_skeleton_joints_position_and_score(annot_file_step1):
                         bb = detector.detect(frame)[0, :4].numpy().astype(int)
                     except Exception as e:
                         print(e)
+                        continue
                 bb[:2] = np.maximum(0, bb[:2] - 5)
                 bb[2:] = np.minimum(frame_size, bb[2:] + 5) if bb[2:].any() != 0 else bb[2:]
 
@@ -120,27 +124,27 @@ def extract_skeleton_joints_position_and_score(annot_file_step1):
 
                     #idx = result[0]['kp_score'] <= 0.05
                     #pt_norm[idx.squeeze()] = np.nan
-                    row = [vid, i, *pt_norm.flatten().tolist(), cls_idx]
+                    row = [vid_rename, i, *pt_norm.flatten().tolist(), cls_idx]
                     scr = result[0]['kp_score'].mean()
                 else:
-                    row = [vid, i, *[np.nan] * (13 * 3), cls_idx]
+                    row = [vid_rename, i, *[np.nan] * (13 * 3), cls_idx]
                     scr = 0.0
 
                 df.loc[cur_row] = row
                 cur_row += 1
 
                 # VISUALIZE.
-                frame = vis_frame_fast(frame, result)
-                frame = cv2.rectangle(frame, (bb[0], bb[1]), (bb[2], bb[3]), (0, 255, 0), 2)
-                frame = cv2.putText(frame, 'Frame: {}, Pose: {}, Score: {:.4f}'.format(i, cls_idx, scr),
-                                    (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-                frame = frame[:, :, ::-1]
-                fps_time = time.time()
+                # frame = vis_frame_fast(frame, result)
+                # frame = cv2.rectangle(frame, (bb[0], bb[1]), (bb[2], bb[3]), (0, 255, 0), 2)
+                # frame = cv2.putText(frame, 'Frame: {}, Pose: {}, Score: {:.4f}'.format(i, cls_idx, scr),
+                #                     (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                # frame = frame[:, :, ::-1]
+                # fps_time = time.time()
                 i += 1
 
-                cv2.imshow('frame', frame)
-                if cv2.waitKey(1) & 0xFF == ord('q'):
-                    break
+                # cv2.imshow('frame', frame)
+                # if cv2.waitKey(1) & 0xFF == ord('q'):
+                #     break
             else:
                 break
 
@@ -154,6 +158,13 @@ def extract_skeleton_joints_position_and_score(annot_file_step1):
 
 
 if __name__ == '__main__':
-
-    extract_skeleton_joints_position_and_score(annot_file_step1)
+    list_file_data_step1 = glob(path_data_train + "/Data_Step1/*")
+    list_file_data_step1 = sorted(list_file_data_step1)
+    list_video_name = []
+    for file_label_step1 in list_file_data_step1:
+        name_file = file_label_step1.split("/")[-1][:-4]
+        video_folder = path_data_train + "/Videos/" + name_file + "/Videos"
+        annot_folder = path_data_train + "/Videos/" + name_file + "/Annotation_files"
+        save_path = path_data_train + "/Data_Step2/" + name_file + "-pose+score.csv"
+        extract_skeleton_joints_position_and_score(file_label_step1, video_folder, annot_folder, save_path, list_video_name, name_file)
 
