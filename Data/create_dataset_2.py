@@ -158,13 +158,13 @@ def extract_skeleton_joints_position_and_score(file_label_step1, video_folder, a
 
 
 if __name__ == '__main__':
-    list_file_data_step1 = glob(path_data_train + "/Data_Step1/*")
+    list_file_data_step1 = glob(path_data_train + "/Data_Step1_2_class/*")
     list_file_data_step1 = sorted(list_file_data_step1)
     list_video_name = []
     for file_label_step1 in list_file_data_step1:
         name_file = file_label_step1.split("/")[-1][:-4]
         video_folder = path_data_train + "/Videos/" + name_file + "/Videos"
         annot_folder = path_data_train + "/Videos/" + name_file + "/Annotation_files"
-        save_path = path_data_train + "/Data_Step2/" + name_file + "-pose+score.csv"
+        save_path = path_data_train + "/Data_Step2_2_class/" + name_file + "-pose+score.csv"
         extract_skeleton_joints_position_and_score(file_label_step1, video_folder, annot_folder, save_path, list_video_name, name_file)
 

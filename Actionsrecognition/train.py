@@ -14,7 +14,8 @@ from Actionsrecognition.Models import *
 from Visualizer import plot_graphs, plot_confusion_metrix
 
 
-save_folder = 'saved/TSSTG(pts+mot)-01(cf+hm-hm)'
+# save_folder = 'saved/TSSTG(pts+mot)-01(cf+hm-hm)'
+save_folder = 'saved/TSSTG_2_class'
 
 device = 'cuda'
 epochs = 30
@@ -32,12 +33,12 @@ batch_size = 32
 #   channels: Inputs data (x, y and scores), Default: 3
 #   num_class: Number of pose class to train, Default: 7
 
-data_files = ['/storages/data/DATA/Action_Recognition/DataTraining/Data_Step3/train.pkl',
-              '/storages/data/DATA/Action_Recognition/DataTraining/Data_Step3/test.pkl']
+data_files = ['/storages/data/DATA/Action_Recognition/DataTraining/Data_Step3_2_class/train.pkl',
+              '/storages/data/DATA/Action_Recognition/DataTraining/Data_Step3_2_class/test.pkl']
 
-class_names = ['Standing', 'Walking', 'Sitting', 'Lying Down',
-               'Stand up', 'Sit down', 'Fall Down']
-# class_names = ['Fall Down']
+# class_names = ['Standing', 'Walking', 'Sitting', 'Lying Down',
+#                'Stand up', 'Sit down', 'Fall Down']
+class_names = ['Normal', 'Fall Down']
 num_class = len(class_names)
 
 
@@ -89,9 +90,9 @@ if __name__ == '__main__':
 
     # DATA.
     # train_loader, _ = load_dataset(data_files[0:1], batch_size)
-    # valid_loader, train_loader_ = load_dataset(data_files[1:2], batch_size, 0.2)
+    # train_loader, valid_loader = load_dataset(data_files[1:2], batch_size, 0.2)
 
-    valid_loader, train_loader, = load_dataset(data_files[0:1], batch_size, 0.2)
+    train_loader, valid_loader = load_dataset(data_files[0:1], batch_size, 0.2)
 
     # train_loader = data.DataLoader(data.ConcatDataset([train_loader.dataset, train_loader_.dataset]),
     #                                batch_size, shuffle=True)

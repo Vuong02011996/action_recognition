@@ -54,3 +54,4 @@ docs/_build/
 
 Models/
 Actionsrecognition/saved/TSSTG(pts+mot)-01(cf+hm-hm)/*.pth
+Actionsrecognition/saved/*

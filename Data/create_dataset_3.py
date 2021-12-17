@@ -12,8 +12,8 @@ import matplotlib.pyplot as plt
 from collections import Counter
 from sklearn.model_selection import train_test_split
 
-class_names = ['Standing', 'Walking', 'Sitting', 'Lying Down',
-               'Stand up', 'Sit down', 'Fall Down']
+# class_names = ['Standing', 'Walking', 'Sitting', 'Lying Down',
+#                'Stand up', 'Sit down', 'Fall Down']
 main_parts = ['LShoulder_x', 'LShoulder_y', 'RShoulder_x', 'RShoulder_y', 'LHip_x', 'LHip_y',
               'RHip_x', 'RHip_y']
 main_idx_parts = [1, 2, 7, 8, -1]  # 1.5 ; L_shoulder, R_shoulder, L_hip, R_hip and point between l, r shoulder
@@ -150,8 +150,8 @@ def counter_label_training():
 
 
 def combine_data_step2():
-    list_csv_pose_file_step2 = glob(path_data_train + "/Data_Step2/*")
-    save_path = path_data_train + "/Data_Step2/total_step2.csv"
+    list_csv_pose_file_step2 = glob(path_data_train + "/Data_Step2_2_class/*")
+    save_path = path_data_train + "/Data_Step2_2_class/total_step2.csv"
     list_csv_pose_file_step2 = sorted(list_csv_pose_file_step2)
     total_annot_step2 = None
     for csv_pose_file in list_csv_pose_file_step2:
@@ -165,10 +165,10 @@ def combine_data_step2():
 
 
 def prepare_data_step3():
-    csv_pose_file = path_data_train + "/Data_Step2/total_step2.csv"
+    csv_pose_file = path_data_train + "/Data_Step2_2_class/total_step2.csv"
 
-    save_path_train = path_data_train + "/Data_Step3/" + "train.pkl"
-    save_path_test = path_data_train + "/Data_Step3/" + "test.pkl"
+    save_path_train = path_data_train + "/Data_Step3_2_class/" + "train.pkl"
+    save_path_test = path_data_train + "/Data_Step3_2_class/" + "test.pkl"
 
     annot = pd.read_csv(csv_pose_file)
     # 57567 Frame, 105 video
