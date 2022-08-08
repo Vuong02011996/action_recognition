@@ -17,12 +17,11 @@ import numpy as np
 from glob import glob
 import torchvision.transforms as transforms
 
+from Data.config import path_data_train
 from DetectorLoader import TinyYOLOv3_onecls
+from Mmpose.inference_image_mmpose import mmpose_inference
 from PoseEstimateLoader import SPPE_FastPose
 from fn import vis_frame_fast
-
-
-path_data_train = "/storages/data/DATA/Action_Recognition/DataTraining"
 
 # save_path = path_data_train + '/Home_new-pose+score.csv'
 
@@ -56,10 +55,21 @@ def normalize_points_with_size(points_xy, width, height, flip=False):
 
 
 def extract_skeleton_joints_position_and_score(file_label_step1, video_folder, annot_folder, save_path, list_video_name,name_file):
+    """
+
+    :param file_label_step1:
+    :param video_folder:
+    :param annot_folder:
+    :param save_path:
+    :param list_video_name:
+    :param name_file:
+    :return:
+    """
     annot_step1 = pd.read_csv(file_label_step1)
     vid_list = annot_step1['video'].unique()
     for vid in vid_list:
         print(list_video_name)
+        '''rename video the same name'''
         if vid in list_video_name:
             vid_rename = vid.split(".")[0] + "_" + name_file + ".avi"
         else:
@@ -101,6 +111,7 @@ def extract_skeleton_joints_position_and_score(file_label_step1, video_folder, a
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 cls_idx = int(frames_label[frames_label['frame'] == i]['label'])
 
+                '''Check bounding box and using yolov3 detect if None'''
                 if annot is not None:
                     bb = np.array(annot.iloc[i-1, 2:].astype(int))
                 else:
@@ -113,19 +124,29 @@ def extract_skeleton_joints_position_and_score(file_label_step1, video_folder, a
                 bb[2:] = np.minimum(frame_size, bb[2:] + 5) if bb[2:].any() != 0 else bb[2:]
 
                 result = []
+                kp_result = []
+                kp_score = []
+                '''check if exist bounding box will predict pose else fill none'''
                 if bb.any() != 0:
-                    result = pose_estimator.predict(frame, torch.tensor(bb[None, ...]),
-                                                    torch.tensor([[1.0]]))
+                    # result = pose_estimator.predict(frame, torch.tensor(bb[None, ...]),
+                    #                                 torch.tensor([[1.0]]))
+                    # kp_result = result[0]['keypoints'].numpy().copy()
+                    # kp_score = result[0]['kp_score']
+                    result = mmpose_inference(bb[None, ...], frame)
+                    '''delete 4 points not using'''
+                    key_points_13_pose = [np.delete(ps["keypoints"], [1, 2, 3, 4], axis=0) for ps in result]
+                    kp_result = key_points_13_pose[0][:, 0:2]
+                    kp_score = key_points_13_pose[0][:, 2:3]
 
                 if len(result) > 0:
-                    pt_norm = normalize_points_with_size(result[0]['keypoints'].numpy().copy(),
+                    pt_norm = normalize_points_with_size(kp_result,
                                                          frame_size[0], frame_size[1])
-                    pt_norm = np.concatenate((pt_norm, result[0]['kp_score']), axis=1)
+                    pt_norm = np.concatenate((pt_norm, kp_score), axis=1)
 
                     #idx = result[0]['kp_score'] <= 0.05
                     #pt_norm[idx.squeeze()] = np.nan
                     row = [vid_rename, i, *pt_norm.flatten().tolist(), cls_idx]
-                    scr = result[0]['kp_score'].mean()
+                    scr = kp_score.mean()
                 else:
                     row = [vid_rename, i, *[np.nan] * (13 * 3), cls_idx]
                     scr = 0.0

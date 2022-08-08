@@ -11,15 +11,17 @@ from glob import glob
 import matplotlib.pyplot as plt
 from collections import Counter
 from sklearn.model_selection import train_test_split
+import shutil
 
 # class_names = ['Standing', 'Walking', 'Sitting', 'Lying Down',
 #                'Stand up', 'Sit down', 'Fall Down']
+from Data.config import path_data_train
+
 main_parts = ['LShoulder_x', 'LShoulder_y', 'RShoulder_x', 'RShoulder_y', 'LHip_x', 'LHip_y',
               'RHip_x', 'RHip_y']
 main_idx_parts = [1, 2, 7, 8, -1]  # 1.5 ; L_shoulder, R_shoulder, L_hip, R_hip and point between l, r shoulder
 
 # csv_pose_file = '../Data/Coffee_room_new-pose+score.csv'
-path_data_train = "/storages/data/DATA/Action_Recognition/DataTraining"
 # csv_pose_file = path_data_train + '/Home_new-pose+score.csv'
 
 # save_path = path_data_train + '/Coffee_room_new-set(labelXscrw).pkl'
@@ -167,8 +169,17 @@ def combine_data_step2():
 def prepare_data_step3():
     csv_pose_file = path_data_train + "/Data_Step2_2_class/total_step2.csv"
 
-    save_path_train = path_data_train + "/Data_Step3_2_class/" + "train.pkl"
-    save_path_test = path_data_train + "/Data_Step3_2_class/" + "test.pkl"
+    save_path_train = path_data_train + "/Data_Step3_2_class/"
+    if os.path.exists(save_path_train):
+        shutil.rmtree(save_path_train)
+    os.makedirs(save_path_train)
+    save_path_train = save_path_train + "train.pkl"
+
+    save_path_test = path_data_train + "/Data_Step3_2_class/"
+    if os.path.exists(save_path_test):
+        shutil.rmtree(save_path_test)
+    os.makedirs(save_path_test)
+    save_path_test = save_path_test + "test.pkl"
 
     annot = pd.read_csv(csv_pose_file)
     # 57567 Frame, 105 video

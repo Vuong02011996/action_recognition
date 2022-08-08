@@ -27,6 +27,13 @@ class SPPE_FastPose(object):
         self.model.eval()
 
     def predict(self, image, bboxs, bboxs_scores):
+        """
+
+        :param image:
+        :param bboxs: tensor([[2198.56111,  281.62742, 2283.64619,  450.34897]], dtype=torch.float64)
+        :param bboxs_scores: scores:  tensor([1.], dtype=torch.float64)
+        :return:
+        """
         inps, pt1, pt2 = crop_dets(image, bboxs, self.inp_h, self.inp_w)
         pose_hm = self.model(inps.to(self.device)).cpu().data
 

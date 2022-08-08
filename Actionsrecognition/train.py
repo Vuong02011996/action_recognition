@@ -15,7 +15,7 @@ from Visualizer import plot_graphs, plot_confusion_metrix
 
 
 # save_folder = 'saved/TSSTG(pts+mot)-01(cf+hm-hm)'
-save_folder = 'saved/TSSTG_2_class'
+save_folder = 'saved/TSSTG_2_class_mmpose'
 
 device = 'cuda'
 epochs = 30
@@ -33,8 +33,8 @@ batch_size = 32
 #   channels: Inputs data (x, y and scores), Default: 3
 #   num_class: Number of pose class to train, Default: 7
 
-data_files = ['/storages/data/DATA/Action_Recognition/DataTraining/Data_Step3_2_class/train.pkl',
-              '/storages/data/DATA/Action_Recognition/DataTraining/Data_Step3_2_class/test.pkl']
+data_files = ['/DATA/data/DATA/Action_Recognition/DataTraining_mmpose/Data_Step3_2_class/train.pkl',
+              '/DATA/data/DATA/Action_Recognition/DataTraining_mmpose/Data_Step3_2_class/test.pkl']
 
 # class_names = ['Standing', 'Walking', 'Sitting', 'Lying Down',
 #                'Stand up', 'Sit down', 'Fall Down']

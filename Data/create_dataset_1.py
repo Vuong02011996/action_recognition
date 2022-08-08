@@ -30,7 +30,6 @@ def create_csv(folder):
     cols = ['video', 'frame', 'label']
     df = pd.DataFrame(columns=cols)
     for i, fil in enumerate(list_file_video):
-
         """Get action class from annotation file"""
         annot = pd.read_csv(os.path.join(annot_folder, list_file_annot[i]), header=None,
                             names=['frame_idx', 'class', 'xmin', 'ymin', 'xmax', 'ymax'])
